@@ -1,0 +1,106 @@
+---
+title: 'Installation'
+description: 'Install Color Me in your browser'
+---
+
+## Prerequisites
+
+Before you begin, make sure you have the following installed:
+
+- **Node.js** — required to run the build toolchain
+- **yarn** or **npm** — package manager for installing dependencies
+- **git** — for cloning the repository
+
+<Note>
+  Color Me has the best support on Firefox. Chrome, Opera, and Edge builds are available but may have limited functionality — the `theme` permission used to recolor the browser frame is Firefox-only.
+</Note>
+
+## Clone and build
+
+<Steps>
+  <Step title="Clone the repository">
+    ```bash
+    git clone https://github.com/ehcaw/colorme.git
+    cd colorme
+    ```
+  </Step>
+
+  <Step title="Install dependencies">
+    <CodeGroup>
+
+    ```bash yarn
+    yarn install
+    ```
+
+    ```bash npm
+    npm install
+    ```
+
+    </CodeGroup>
+  </Step>
+
+  <Step title="Build for your target browser">
+    <CodeGroup>
+
+    ```bash yarn
+    yarn build:chrome
+    yarn build:firefox
+    yarn build:opera
+    yarn build:edge
+    ```
+
+    ```bash npm
+    npm run build:chrome
+    npm run build:firefox
+    npm run build:opera
+    npm run build:edge
+    ```
+
+    </CodeGroup>
+
+    To build for all targets at once:
+
+    <CodeGroup>
+
+    ```bash yarn
+    yarn build
+    ```
+
+    ```bash npm
+    npm run build
+    ```
+
+    </CodeGroup>
+  </Step>
+
+  <Step title="Load the extension in your browser">
+    Follow the browser-specific instructions below.
+  </Step>
+</Steps>
+
+## Load the extension
+
+<Tabs>
+  <Tab title="Firefox">
+    1. Open Firefox and navigate to `about:debugging`.
+    2. Click **Load Temporary Add-on**.
+    3. In the file browser, open `colorme/dev/firefox` and select any file inside the directory.
+
+    <Tip>
+      Firefox is the primary supported browser for Color Me. The `theme` permission that powers frame color customization is a Firefox-specific API.
+    </Tip>
+  </Tab>
+
+  <Tab title="Chrome & Opera">
+    1. Open Chrome or Opera and navigate to `chrome://extensions`.
+    2. Enable **Developer mode** using the toggle in the top-right corner.
+    3. Click **Load unpacked extension...**
+    4. Select the `colorme/dev/chrome` or `colorme/dev/opera` directory.
+  </Tab>
+
+  <Tab title="Edge">
+    Follow Microsoft's official guide for sideloading extensions in Edge:
+
+    [Adding and removing extensions — Microsoft Edge](https://docs.microsoft.com/en-us/microsoft-edge/extensions/guides/adding-and-removing-extensions)
+  </Tab>
+</Tabs>

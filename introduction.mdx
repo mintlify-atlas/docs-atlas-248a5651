@@ -1,0 +1,74 @@
+---
+title: "Introduction"
+description: "Color Me is a browser extension that lets you customize your browser's theme color using an interactive color wheel, with support for day/night modes and saved color palettes."
+---
+
+<CardGroup cols={2}>
+  <Card title="Quick Install" icon="download" href="/installation">
+    Get Color Me installed in your browser in minutes
+  </Card>
+  <Card title="Quickstart" icon="rocket" href="/quickstart">
+    Start customizing your browser theme right away
+  </Card>
+  <Card title="Color Wheel" icon="circle-half-stroke" href="/usage/color-wheel">
+    Learn how to use the interactive color wheel
+  </Card>
+  <Card title="Saved Colors" icon="palette" href="/usage/saved-colors">
+    Save and reuse your favorite colors
+  </Card>
+</CardGroup>
+
+## What is Color Me?
+
+Color Me is a browser extension that puts a vibrant, interactive color wheel right in your browser toolbar. Pick any color and your browser's frame, toolbar, and UI chrome instantly update to match — in real time.
+
+Whether you want a calming blue for focus mode, a warm amber for evening browsing, or a bold red to match your mood, Color Me makes it effortless.
+
+## Key features
+
+<CardGroup cols={2}>
+  <Card title="Interactive color wheel" icon="circle-dot">
+    A full HSL color wheel with real-time preview — pick any hue, saturation, and lightness with a single drag
+  </Card>
+  <Card title="Day & night modes" icon="moon">
+    Separate color profiles for day and night. Toggle between them instantly with a single switch
+  </Card>
+  <Card title="Saved color palettes" icon="swatchbook">
+    Save up to 6 colors to a persistent palette. Click any saved color to instantly apply it
+  </Card>
+  <Card title="Cross-browser support" icon="globe">
+    Works on Firefox, Chrome, Opera, and Edge with per-browser builds
+  </Card>
+  <Card title="Persistent storage" icon="database">
+    Your colors and mode preferences are saved in browser storage and restored on next launch
+  </Card>
+  <Card title="Color theory tools" icon="flask">
+    Automatic contrast detection using CMYK conversion ensures readable UI text on any background
+  </Card>
+</CardGroup>
+
+## How it works
+
+Color Me uses the **WebExtensions Theme API** (`browser.theme.update()`) to dynamically update your browser's visual chrome. When you select a color on the wheel:
+
+1. The hex value is captured from the `reinvented-color-wheel` component
+2. The current mode (day or night) determines which theme profile to update
+3. `browser.theme.update()` is called with the new frame color
+4. The color is persisted to browser storage for the next session
+
+<Note>
+  Color Me primarily targets Firefox, where the Theme API has the broadest support. Chrome and Edge support is available but the Theme API has more limited scope on those platforms.
+</Note>
+
+## Browser support
+
+| Browser | Status |
+|---------|--------|
+| Firefox | Fully supported |
+| Chrome  | Supported (limited theme API) |
+| Opera   | Supported |
+| Edge    | Supported |
+
+## License
+
+Color Me is open source under the [MIT License](https://github.com/ehcaw/colorme/blob/main/LICENSE).

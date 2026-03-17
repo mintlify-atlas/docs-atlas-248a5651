@@ -1,0 +1,40 @@
+---
+title: 'Browser support'
+description: 'Which browsers Color Me supports and any known limitations'
+---
+
+Color Me targets Manifest V3 and ships separate build artifacts for each supported browser. Firefox is the primary development target; other browsers are supported on a best-effort basis.
+
+<Note>
+  The WebExtensions Theme API (`browser.theme.update()`) is what enables Color Me to change the color of the browser frame and toolbar. Not all browsers expose this API to extensions.
+</Note>
+
+## Supported browsers
+
+| Browser | Theme API support | Status | Notes |
+|---------|------------------|--------|-------|
+| Firefox | Yes | Recommended | `theme` permission is declared in the manifest. Full browser chrome coloring works. |
+| Chrome | No | Limited | `theme` permission is absent from the Chrome manifest. The color wheel UI works, but browser chrome (toolbar, frame) may not update. |
+| Opera | No | Untested | A build artifact is available. Behavior in practice has not been verified. |
+| Edge | No | Untested | A build artifact is available. Follow the [Microsoft Edge extension guide](https://learn.microsoft.com/en-us/microsoft-edge/extensions-chromium/) to sideload. |
+
+<Warning>
+  On Chrome, the `theme` permission is not included in the manifest. The color wheel and popup UI will render, but applying a color to the browser toolbar and frame is not guaranteed to work.
+</Warning>
+
+<Tip>
+  Use Firefox for the best experience. It is the only browser where Color Me's theme customization is fully tested and confirmed to work end-to-end.
+</Tip>
+
+## Build commands
+
+Each browser target is built from its own base manifest file. Use the following commands to produce a browser-specific zip artifact:
+
+| Browser | Build command | Output |
+|---------|--------------|--------|
+| Firefox | `yarn build:firefox` | `dist/firefox.zip` |
+| Chrome | `yarn build:chrome` | `dist/chrome.zip` |
+| Opera | `yarn build:opera` | `dist/opera.zip` |
+| Edge | `yarn build:edge` | `dist/edge.zip` |
+
+At build time, webpack selects the correct base manifest using the `TARGET` environment variable and merges it with the compiled output. See [Building](/development/building) for full build instructions.

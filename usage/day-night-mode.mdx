@@ -1,0 +1,60 @@
+---
+title: 'Day & night mode'
+description: 'Use separate color profiles for daytime and nighttime browsing'
+---
+
+Color Me stores two independent color profiles — one for day and one for night. You can set a different toolbar color for each and switch between them with a single toggle.
+
+## Two separate profiles
+
+Each mode has its own color, stored independently:
+
+<Tabs>
+  <Tab title="Day mode">
+    Day mode is the default profile. It starts with a white toolbar (`#ffffff`) and is active when the toggle is in the off position.
+
+    Use day mode for your standard browsing color during daylight hours.
+  </Tab>
+  <Tab title="Night mode">
+    Night mode starts with a black toolbar (`#000000`) and activates when the toggle is switched on.
+
+    Use night mode to switch to a darker browser chrome in low-light environments.
+
+    <Tip>
+      Warm colors like deep amber (`#b5651d`) or muted red (`#8b0000`) reduce blue light exposure more than pure black, which can be easier on the eyes at night.
+    </Tip>
+  </Tab>
+</Tabs>
+
+## How to switch modes
+
+<Steps>
+  <Step title="Locate the toggle">
+    Open the Color Me popup. The day/night toggle is at the bottom of the popup, next to the current mode label (**light** or **dark**).
+  </Step>
+  <Step title="Click the toggle">
+    Click the toggle switch. Color Me calls `changeMode(themes, newMode)`, which calls `browser.theme.update(theme[mode])` to apply the stored color for the new mode immediately.
+  </Step>
+  <Step title="Customize the new mode">
+    With the new mode active, use the color wheel to pick a color for it. The color is saved to that mode's profile.
+  </Step>
+</Steps>
+
+## Persistence
+
+The active mode is saved to browser storage whenever you switch:
+
+```typescript
+storage.set({ mode: newMode });
+```
+
+When you reopen the popup, Color Me reads the saved mode from storage and restores the correct color:
+
+```typescript
+const result = await storage.get('mode');
+const fetchedMode = result.mode || 'day';
+setHex((themes[fetchedMode] as any).colors.frame || '#FFFFFF');
+setMode(fetchedMode);
+```
+
+Your mode selection persists across browser restarts and popup closes without any additional action.

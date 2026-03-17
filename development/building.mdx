@@ -1,0 +1,113 @@
+---
+title: 'Building for production'
+description: Build and package Color Me for distribution
+---
+
+<Warning>
+  Chrome does not support the `theme` permission the way Firefox does. As a result, theme customization features are limited when building for Chrome. Test theme-related functionality in Firefox.
+</Warning>
+
+## Build a single target
+
+Use the browser-specific build commands to produce a production build for a single target:
+
+<CodeGroup>
+
+```bash Firefox
+yarn build:firefox
+```
+
+```bash Chrome
+yarn build:chrome
+```
+
+```bash Edge
+yarn build:edge
+```
+
+```bash Opera
+yarn build:opera
+```
+
+</CodeGroup>
+
+## Build all targets at once
+
+Run the combined build command to produce production artifacts for every supported browser in a single step:
+
+```bash
+yarn build
+```
+
+This is equivalent to running `build:chrome`, `build:firefox`, `build:opera`, and `build:edge` sequentially.
+
+## Output format
+
+Production builds use `zip-webpack-plugin` to package each extension into a `.zip` file that is ready for submission to the relevant browser store. The zipped files are placed alongside the unpacked build output for the corresponding browser target.
+
+## Upload to browser stores
+
+After building, upload the packaged extension to the appropriate store.
+
+<Steps>
+  <Step title="Build the extension">
+    Run `yarn build` (all targets) or `yarn build:{browser}` for a specific target.
+  </Step>
+
+  <Step title="Locate the zip file">
+    Find the generated `.zip` file in the build output directory for your target browser.
+  </Step>
+
+  <Step title="Submit to the browser store">
+    Upload the zip through the browser's developer portal:
+
+    <Tabs>
+      <Tab title="Firefox Add-ons">
+        Log in to [addons.mozilla.org](https://addons.mozilla.org/developers/), open your extension listing, and upload the new `.zip` under **Submit a New Version**.
+      </Tab>
+      <Tab title="Chrome Web Store">
+        Log in to the [Chrome Web Store Developer Dashboard](https://chrome.google.com/webstore/devconsole), open your item, and upload the new package under **Package**.
+      </Tab>
+      <Tab title="Edge Add-ons">
+        Log in to the [Microsoft Partner Center](https://partner.microsoft.com/dashboard/microsoftedge/overview), find your extension, and submit the new `.zip` for review.
+      </Tab>
+      <Tab title="Opera Add-ons">
+        Log in to the [Opera Add-ons developer panel](https://addons.opera.com/developer/), select your extension, and upload the updated package.
+      </Tab>
+    </Tabs>
+  </Step>
+</Steps>
+
+You can also run the upload scripts directly if you have store credentials configured:
+
+```bash
+yarn upload
+```
+
+This runs `upload:chrome`, `upload:firefox`, `upload:opera`, and `upload:edge` in sequence.
+
+## Profiling bundle size
+
+The `profile` build mode runs `webpack-bundle-analyzer` so you can inspect what is included in the output bundle.
+
+<CodeGroup>
+
+```bash Firefox
+yarn profile:firefox
+```
+
+```bash Chrome
+yarn profile:chrome
+```
+
+```bash Edge
+yarn profile:edge
+```
+
+```bash Opera
+yarn profile:opera
+```
+
+</CodeGroup>
+
+`webpack-bundle-analyzer` opens an interactive treemap in your browser showing module sizes and their contribution to the final bundle.

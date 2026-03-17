@@ -1,0 +1,54 @@
+---
+title: 'Permissions'
+description: 'Browser permissions required by Color Me and why they are needed'
+---
+
+Color Me requests the minimum set of permissions needed to apply themes and persist your color choices. No permission grants access to browsing history, page content, or any data outside of what the extension itself stores.
+
+<Note>
+  Color Me does not collect or transmit any user data. All storage is local to your browser. No analytics, telemetry, or remote servers are involved.
+</Note>
+
+## Permission reference
+
+| Permission | Required by | Purpose |
+|-----------|------------|--------|
+| `tabs` | Firefox, Chrome | Read tab metadata, send messages to tabs, and manage tab lifecycle events in the background service worker. |
+| `storage` | Firefox, Chrome | Persist your mode setting, saved colors list, and day/night hex values in browser storage. |
+| `theme` | Firefox only | Call `browser.theme.update()` to apply a color to the browser frame and toolbar. |
+| `host_permissions: http://*/*, https://*/*` | Firefox, Chrome | Allow the content script to be injected into all web pages so it can receive `CHANGE_COLOR` messages. |
+
+## What each permission does
+
+### `tabs`
+
+The background service worker listens on `tabs.onUpdated` and `tabs.onCreated` to react to tab navigation and creation events. The `tabs` permission also lets the background layer send typed messages to specific tabs via `sendMessage`.
+
+Without `tabs`, the background service worker cannot communicate with open tabs or track tab state.
+
+### `storage`
+
+Color Me uses `storage.sync` when available, falling back to `storage.local`. The following keys are written to storage:
+
+| Key | Type | Description |
+|-----|------|-------------|
+| `mode` | `'day'` \| `'night'` | The currently active color mode. |
+| `savedColors` | JSON string | Array of saved hex color strings, e.g. `'["#ff0000","#00ff00"]'`. |
+| `day` | hex string | The hex color assigned to day mode. |
+| `night` | hex string | The hex color assigned to night mode. |
+
+Without `storage`, your saved colors and mode preference are lost every time the popup closes.
+
+### `theme` (Firefox only)
+
+The `theme` permission grants access to `browser.theme.update()`, which is the Firefox WebExtensions API for changing the browser frame color. This permission is declared only in `baseManifest_firefox.json` and is absent from the Chrome, Opera, and Edge manifests.
+
+<Warning>
+  Removing the `theme` permission from the Firefox manifest will break browser theme customization entirely. The color wheel will still render, but calling `browser.theme.update()` will throw a permission error and no theme changes will be applied.
+</Warning>
+
+### `host_permissions: http://*/*, https://*/*`
+
+Color Me injects a content script (`content/content.js`) into every `http://` and `https://` page. The content script listens for `CHANGE_COLOR` messages from the popup and applies the selected color to `document.body.style.background`.
+
+Without this host permission, the browser will not inject the content script, and the `CHANGE_COLOR` message will have no recipient on any page.

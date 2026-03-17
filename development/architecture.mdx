@@ -1,0 +1,142 @@
+---
+title: 'Architecture'
+description: Understand how Color Me is structured internally
+---
+
+Color Me is a Manifest V3 browser extension built with React 18 and TypeScript 5. It is divided into three runtime layers that communicate through the browser extension messaging API.
+
+## Layers overview
+
+| Layer | Entry point | Runtime context |
+|---|---|---|
+| Popup UI | `src/popup/index.tsx` | Browser action popup window |
+| Background service worker | `src/background/index.ts` | Persistent background context |
+| Content script | `src/content/index.tsx` | Injected into every web page |
+
+## Source directories
+
+<Columns cols={2}>
+  <Card title="popup/" icon="layout-panel-top">
+    Main user interface. Contains the color wheel, saved colors table, theme logic, and popup styles.
+  </Card>
+  <Card title="background/" icon="server">
+    Background service worker. Manages extension lifecycle events, tab utilities, and message routing.
+  </Card>
+  <Card title="content/" icon="file-code">
+    Content script injected into web pages. Listens for messages and applies color changes directly to the DOM.
+  </Card>
+  <Card title="utils/" icon="wrench">
+    Shared utilities for cross-browser storage abstraction and message sending helpers.
+  </Card>
+</Columns>
+
+## Popup layer (`src/popup/`)
+
+The popup is a React application rendered when the user clicks the extension icon.
+
+- **`Popup.tsx`** — Root popup component. Renders the HSL color wheel (`reinvented-color-wheel`) and wires user interactions to state and side effects.
+- **`ColorTable.tsx`** — Displays the list of saved colors retrieved from browser storage.
+- **`background_script.ts`** — Handles theme logic within the popup context: reads the current theme, calls `browser.theme.update()`, and manages the `themes` object.
+- **`popup.css`** — Styles scoped to the popup window.
+
+### Theme API flow
+
+```
+Color wheel onChange
+  → setHex(newColor)       # React state update
+  → useEffect fires
+  → setTheme(hex)          # theme logic in background_script.ts
+  → browser.theme.update({ colors: { frame: hex } })
+```
+
+### Theme object structure
+
+Themes are defined as plain objects mapping a name to a `colors` record:
+
+```typescript
+const themes = {
+  day: { colors: { frame: '#ffffff' } },
+  night: { colors: { frame: '#000000' } },
+};
+```
+
+The `frame` property maps directly to the browser Theme API's frame color.
+
+## Background layer (`src/background/index.ts`)
+
+The `Background` class is instantiated once when the service worker starts. Its `init()` method registers all event listeners:
+
+```typescript
+class Background {
+  init = () => {
+    runtime.onInstalled.addListener(this.onInstalled);
+    runtime.onMessage.addListener(this.onMessage);
+    tabs.onUpdated.addListener(this.onUpdatedTab);
+    tabs.onCreated.addListener(this.onCreatedTab);
+  };
+}
+
+export const background = new Background();
+```
+
+| Method | Trigger | Purpose |
+|---|---|---|
+| `onInstalled` | Extension install/update | Initialization on first run |
+| `onMessage` | `runtime.sendMessage` | Routes messages from popup and content scripts |
+| `onUpdatedTab` | `tabs.onUpdated` | Reacts to tab navigation events |
+| `onCreatedTab` | `tabs.onCreated` | Reacts to new tab creation |
+| `getURLFromTab` | Called internally | Returns the URL for a given tab ID |
+| `openNewTab` | Called internally | Opens a new browser tab |
+| `closeTab` | Called internally | Closes a specified tab |
+| `sendMessage` | Called internally | Sends a typed `EXTMessage` to a tab |
+
+## Content script (`src/content/`)
+
+The content script is injected into every page. It registers a message listener via `messageListener.ts`:
+
+```typescript
+export const onRequest = async (msg: EXTMessage, sender) => {
+  switch (msg.type) {
+    case 'CHANGE_COLOR': {
+      document.body.style.background = msg?.data?.color;
+      break;
+    }
+    default:
+      return { type: 'SUCCESS' };
+  }
+};
+```
+
+When the popup sends a `CHANGE_COLOR` message, the content script applies the color directly to `document.body.style.background`.
+
+## Utilities (`src/utils/`)
+
+### Storage (`storage.ts`)
+
+Provides a single storage interface that prefers `storage.sync` and falls back to `storage.local` for browsers that do not support sync storage:
+
+```typescript
+import { storage } from 'webextension-polyfill';
+export default storage.sync ? storage.sync : storage.local;
+```
+
+This means saved colors are automatically synced across devices when supported, with no additional configuration required.
+
+### Message sending (`sendMessages.ts`)
+
+Contains helper functions for sending typed `EXTMessage` objects between the popup, background, and content layers.
+
+## Cross-browser polyfill
+
+Color Me uses `webextension-polyfill` and `webextension-polyfill-ts` to normalize differences between the Chrome and Firefox extension APIs. This allows the codebase to use a single promise-based API surface (`browser.*`) that works across all supported browsers, rather than dealing with Chrome's callback-based `chrome.*` APIs directly.
+
+## Manifest strategy
+
+Each browser target has its own base manifest file:
+
+- `baseManifest_chrome.json`
+- `baseManifest_firefox.json`
+- `baseManifest_edge.json`
+- `baseManifest_opera.json`
+
+At build time, webpack selects the correct manifest based on the `TARGET` environment variable and merges it with the compiled output. This allows browser-specific permissions and API declarations (such as the `theme` permission in Firefox) without maintaining separate codebases.

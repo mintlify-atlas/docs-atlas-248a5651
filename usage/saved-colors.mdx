@@ -1,0 +1,59 @@
+---
+title: 'Saved colors'
+description: 'Save your favorite colors for quick access'
+---
+
+Color Me lets you save any color you've picked and re-apply it in one click. Saved colors appear as a horizontal scrollable row of color swatches at the bottom of the popup.
+
+## How saved colors work
+
+Saved colors are stored in browser storage as a JSON-encoded array of hex strings:
+
+```typescript
+// Example storage value
+{ savedColors: '["#3b82f6","#ef4444","#22c55e"]' }
+```
+
+When the popup opens, Color Me reads the stored string and extracts valid hex values using this regular expression:
+
+```typescript
+const colorRegex = /#[0-9a-fA-F]{6}/g;
+savedColors = result.savedColors.match(colorRegex);
+```
+
+Only 6-digit hex values (e.g. `#ff6600`) are matched. Shorthand hex or invalid entries are ignored.
+
+## How to save a color
+
+<Steps>
+  <Step title="Pick a color">
+    Use the color wheel to select the color you want to save. The current hex value is shown below the wheel.
+  </Step>
+  <Step title="Click the + button">
+    Click the **+** button next to the day/night toggle. Color Me appends the current hex value to the `savedColors` array and writes it back to storage:
+
+    ```typescript
+    savedColors.push(hex);
+    storage.set({ savedColors: JSON.stringify(savedColors) });
+    ```
+  </Step>
+  <Step title="Confirm the swatch appears">
+    The new color appears as a swatch in the scrollable row. Each swatch has a 2px border that adapts to maintain contrast with the popup background.
+  </Step>
+</Steps>
+
+## Applying a saved color
+
+Click any swatch in the row to apply that color. Color Me calls `setTheme(themes, color, mode)`, which updates the browser toolbar to that hex value and stores it as the current color for the active mode.
+
+<Note>
+  Saved colors are not tied to a specific mode. When you click a swatch, the hex is applied to whichever mode is currently active — day or night. The same saved color can be used in both modes.
+</Note>
+
+## Persistence
+
+Saved colors persist across browser sessions. The array is written to browser storage each time you save a color, so your swatches are available every time you open the popup.
+
+<Warning>
+  If your browser is signed in and sync storage is enabled, saved colors may sync across all your devices. Adding or removing a color on one device will affect the saved colors on all synced devices.
+</Warning>

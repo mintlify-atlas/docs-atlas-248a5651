@@ -1,0 +1,101 @@
+---
+title: 'Development setup'
+description: Set up a local development environment for contributing to Color Me
+---
+
+## Prerequisites
+
+Before you begin, make sure you have the following installed:
+
+- **Node.js** 18 or later
+- **yarn** (preferred) or npm
+- **git**
+
+<Tip>
+  Firefox is recommended for development because it supports the full browser Theme API, giving you access to all theme customization features. Chrome has limited theme support due to permission restrictions.
+</Tip>
+
+## Clone and install
+
+<Steps>
+  <Step title="Clone the repository">
+    ```bash
+    git clone https://github.com/ehcaw/colorme.git
+    cd colorme
+    ```
+  </Step>
+
+  <Step title="Install dependencies">
+    <CodeGroup>
+
+    ```bash yarn
+    yarn install
+    ```
+
+    ```bash npm
+    npm install
+    ```
+
+    </CodeGroup>
+  </Step>
+
+  <Step title="Start the development server">
+    Run the dev command for your target browser (see below).
+  </Step>
+</Steps>
+
+## Start the dev server
+
+Each browser target has its own dev command. The build system uses `webpack-ext-reloader-mv3` to provide live reload while you develop.
+
+<Tabs>
+  <Tab title="Firefox">
+    ```bash
+    yarn dev:firefox
+    ```
+  </Tab>
+  <Tab title="Chrome">
+    ```bash
+    yarn dev:chrome
+    ```
+  </Tab>
+  <Tab title="Edge">
+    ```bash
+    yarn dev:edge
+    ```
+  </Tab>
+  <Tab title="Opera">
+    ```bash
+    yarn dev:opera
+    ```
+  </Tab>
+</Tabs>
+
+<Note>
+  Development builds are written to the `dev/` directory, one subdirectory per browser target: `dev/chrome`, `dev/firefox`, `dev/opera`, and `dev/edge`. Load the appropriate folder as an unpacked extension in your browser's extension management page.
+</Note>
+
+## Environment variables
+
+The webpack configuration is driven by two environment variables that the dev scripts set automatically via `cross-env`:
+
+| Variable | Values | Purpose |
+|----------|--------|---------|
+| `TARGET` | `chrome`, `firefox`, `opera`, `edge` | Selects the correct base manifest (`baseManifest_{TARGET}.json`) and output directory. |
+| `NODE_ENV` | `development`, `production`, `profile` | Controls build optimizations, source maps, and plugin behavior. |
+
+You can override these manually if you need a custom build:
+
+```bash
+cross-env NODE_ENV=development TARGET=firefox webpack
+```
+
+## Linting
+
+Color Me uses ESLint with the airbnb config, TypeScript rules, and prettier formatting. Run the auto-fix command before submitting a pull request:
+
+```bash
+yarn lint-fix
+```
+
+This runs ESLint with `--fix` across all `.js`, `.jsx`, `.ts`, and `.tsx` files in `src/`.

@@ -1,0 +1,58 @@
+---
+title: 'Color wheel'
+description: 'How to use the interactive color wheel to customize your browser theme'
+---
+
+The color wheel lets you pick any color and apply it to your browser's toolbar in real time. As soon as you release the drag handle, Color Me updates your browser theme.
+
+## How the color wheel works
+
+Color Me uses a 300px diameter HSL color wheel with a 20px ring thickness. A 16px drag handle sits on the ring and lets you select any hue and saturation. The `wheelReflectsSaturation` property is enabled, so the wheel's appearance shifts as you adjust saturation — giving you an accurate preview of the color you're choosing.
+
+When you move the handle, the `onChange` callback fires with the new hex value. That value is passed directly to `browser.theme.update()`, which updates the browser toolbar color without any page reload.
+
+## How to pick a color
+
+<Steps>
+  <Step title="Open the popup">
+    Click the Color Me icon in your browser toolbar to open the extension popup.
+  </Step>
+  <Step title="Drag the handle">
+    Click and drag the handle on the color wheel ring to select a hue. Move inward or outward to adjust saturation.
+  </Step>
+  <Step title="Confirm your selection">
+    Release the handle. The browser toolbar updates immediately to the selected color.
+  </Step>
+</Steps>
+
+<Note>
+  The popup background color changes to match your current selection, so you always see the color in context before looking at the toolbar.
+</Note>
+
+## Reading the current color
+
+The hex value of the selected color is displayed below the wheel:
+
+```
+Hex: #rrggbb
+```
+
+This value updates live as you drag. You can use it to record or share an exact color.
+
+## Automatic text contrast
+
+Color Me adjusts its own text color automatically so the hex label and UI elements stay readable regardless of what color you pick. It does this by converting the selected hex to CMYK and checking the black (K) channel:
+
+```typescript
+function hex2cmyk(hexCode: string) {
+  // ... converts hex RGB to CMYK values (0–100)
+  return { c: computedC, m: computedM, y: computedY, k: computedK };
+}
+```
+
+If `k > 51` (a dark color), the text flips to white. Otherwise it stays black. This threshold keeps contrast accessible across the full color range.
+
+| Condition | Text color |
+|-----------|------------|
+| `k > 51` (dark color) | White |
+| `k ≤ 51` (light color) | Black |

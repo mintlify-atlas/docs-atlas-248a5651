@@ -1,0 +1,83 @@
+---
+title: 'FAQ'
+description: 'Frequently asked questions about Color Me'
+---
+
+<AccordionGroup>
+  <Accordion title="Does Color Me work on Chrome?">
+    Yes, but with limitations. The `theme` permission is not included in the Chrome manifest, so Color Me cannot call `browser.theme.update()` to recolor the browser toolbar and frame. The color wheel UI and popup will render normally, but changes to the browser chrome itself may not apply.
+
+    For full browser theme support, use Firefox.
+  </Accordion>
+
+  <Accordion title="Why does the popup background change color?">
+    The popup background mirrors your currently selected color. When you pick a color on the wheel, Color Me sets `document.body.style.backgroundColor` on the popup page to that hex value. This gives you an immediate preview of the color in context before you look at the browser toolbar.
+  </Accordion>
+
+  <Accordion title="Where are my colors stored?">
+    Your colors are stored in browser extension storage using the `storage` permission. Color Me prefers `storage.sync` (which syncs across devices when you're signed in to your browser account) and falls back to `storage.local` if sync is unavailable.
+
+    The following keys are used:
+
+    | Key | Description |
+    |-----|-------------|
+    | `mode` | Your active mode: `'day'` or `'night'` |
+    | `savedColors` | A JSON-stringified array of saved hex strings |
+    | `day` | The hex color for day mode |
+    | `night` | The hex color for night mode |
+  </Accordion>
+
+  <Accordion title="What happens to my colors if I uninstall the extension?">
+    Browser extension storage is cleared when you uninstall the extension. Your saved hex colors, mode setting, and day/night values will be permanently deleted.
+
+    Before uninstalling, record the hex values you want to keep. You can find them displayed in the popup under the color wheel.
+  </Accordion>
+
+  <Accordion title="Why is the text in the popup sometimes white and sometimes black?">
+    Color Me automatically adjusts its text color to maintain readable contrast against whatever background color you've selected. It does this by converting the hex value to CMYK and checking the black (K) channel:
+
+    | Condition | Text color |
+    |-----------|------------|
+    | `k > 51` (dark color) | White |
+    | `k ≤ 51` (light color) | Black |
+
+    This threshold keeps the hex label and UI elements legible across the full color range.
+  </Accordion>
+
+  <Accordion title="Can I have different colors for different websites?">
+    Not currently. Color Me applies a single theme globally to the entire browser frame. The extension has no concept of per-site colors; whichever color is active applies everywhere.
+  </Accordion>
+
+  <Accordion title="What is the difference between day and night mode?">
+    Day and night mode are two separate color profiles. Day mode defaults to white (`#ffffff`) and night mode defaults to black (`#000000`). You can set a different hex color for each mode independently.
+
+    Switching between modes applies the stored color for that mode immediately. Your mode choice persists across browser sessions via `storage.sync` or `storage.local`.
+  </Accordion>
+
+  <Accordion title="How do I reset to the default browser theme?">
+    Open the Color Me popup and switch to day mode, then select white (`#ffffff`) from the color wheel. This sets the browser frame back to its default-looking white state.
+
+    Alternatively, removing and reinstalling the extension will clear all stored values and start fresh with the default day and night colors.
+  </Accordion>
+
+  <Accordion title="How many colors can I save?">
+    There is no hard limit enforced in the Color Me source code. Saved colors are stored as a JSON-stringified array under the `savedColors` key. In practice, the limit is determined by your browser's storage quota:
+
+    | Storage type | Approximate limit |
+    |-------------|------------------|
+    | `storage.sync` | ~100 KB total |
+    | `storage.local` | ~5 MB total |
+
+    For typical use with short hex strings, you are unlikely to approach either limit.
+  </Accordion>
+
+  <Accordion title="The extension doesn't seem to work after an update. What should I do?">
+    Try the following steps in order:
+
+    1. Open your browser's extension manager and disable, then re-enable Color Me.
+    2. If the issue persists, remove the extension entirely and reinstall it from the zip for your browser.
+    3. If you suspect stale storage values are causing the problem, clear the extension's storage by removing the extension (which deletes its storage) and reinstalling.
+
+    If the problem continues after reinstalling, check the [GitHub repository](https://github.com/ehcaw/colorme) for open issues.
+  </Accordion>
+</AccordionGroup>
