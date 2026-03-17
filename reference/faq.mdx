@@ -17,14 +17,14 @@ description: 'Frequently asked questions about Color Me'
   <Accordion title="Where are my colors stored?">
     Your colors are stored in browser extension storage using the `storage` permission. Color Me prefers `storage.sync` (which syncs across devices when you're signed in to your browser account) and falls back to `storage.local` if sync is unavailable.
 
-    The following keys are used:
+    The following keys are written to browser extension storage (`storage.sync` / `storage.local`):
 
     | Key | Description |
     |-----|-------------|
     | `mode` | Your active mode: `'day'` or `'night'` |
     | `savedColors` | A JSON-stringified array of saved hex strings |
-    | `day` | The hex color for day mode |
-    | `night` | The hex color for night mode |
+
+    The per-mode frame colors (`day` and `night` hex values) are stored separately in the popup window's `localStorage` by `background_script.ts`.
   </Accordion>
 
   <Accordion title="What happens to my colors if I uninstall the extension?">

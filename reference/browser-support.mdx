@@ -28,13 +28,13 @@ Color Me targets Manifest V3 and ships separate build artifacts for each support
 
 ## Build commands
 
-Each browser target is built from its own base manifest file. Use the following commands to produce a browser-specific zip artifact:
+Each browser target is built from its own base manifest file. Use the following commands to produce a browser-specific build:
 
-| Browser | Build command | Output |
-|---------|--------------|--------|
-| Firefox | `yarn build:firefox` | `dist/firefox.zip` |
-| Chrome | `yarn build:chrome` | `dist/chrome.zip` |
-| Opera | `yarn build:opera` | `dist/opera.zip` |
-| Edge | `yarn build:edge` | `dist/edge.zip` |
+| Browser | Build command |
+|---------|--------------|
+| Firefox | `yarn build:firefox` |
+| Chrome | `yarn build:chrome` |
+| Opera | `yarn build:opera` |
+| Edge | `yarn build:edge` |
 
 At build time, webpack selects the correct base manifest using the `TARGET` environment variable and merges it with the compiled output. See [Building](/development/building) for full build instructions.

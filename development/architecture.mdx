@@ -15,7 +15,7 @@ Color Me is a Manifest V3 browser extension built with React 18 and TypeScript 5
 
 ## Source directories
 
-<Columns cols={2}>
+<CardGroup cols={2}>
   <Card title="popup/" icon="layout-panel-top">
     Main user interface. Contains the color wheel, saved colors table, theme logic, and popup styles.
   </Card>
@@ -28,7 +28,7 @@ Color Me is a Manifest V3 browser extension built with React 18 and TypeScript 5
   <Card title="utils/" icon="wrench">
     Shared utilities for cross-browser storage abstraction and message sending helpers.
   </Card>
-</Columns>
+</CardGroup>
 
 ## Popup layer (`src/popup/`)
 
@@ -43,10 +43,11 @@ The popup is a React application rendered when the user clicks the extension ico
 
 ```
 Color wheel onChange
-  → setHex(newColor)       # React state update
+  → setHex(newColor)                     # React state update
   → useEffect fires
-  → setTheme(hex)          # theme logic in background_script.ts
-  → browser.theme.update({ colors: { frame: hex } })
+  → setTheme(themes, hex, mode)          # theme logic in background_script.ts
+  → updateColor(themes, hex, mode)       # updates themes object in place
+  → browser.theme.update(themes[mode])   # applies new frame color
 ```
 
 ### Theme object structure
@@ -120,7 +121,7 @@ import { storage } from 'webextension-polyfill';
 export default storage.sync ? storage.sync : storage.local;
 ```
 
-This means saved colors are automatically synced across devices when supported, with no additional configuration required.
+This is used by `Popup.tsx` to persist `mode` and `savedColors`. The per-mode frame colors (`day`, `night`) are stored separately in the popup window's `localStorage` by `background_script.ts` using `localStorage.getItem` / `localStorage.setItem`.
 
 ### Message sending (`sendMessages.ts`)
 

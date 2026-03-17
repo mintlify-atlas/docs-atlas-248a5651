@@ -28,14 +28,14 @@ Without `tabs`, the background service worker cannot communicate with open tabs 
 
 ### `storage`
 
-Color Me uses `storage.sync` when available, falling back to `storage.local`. The following keys are written to storage:
+Color Me uses `storage.sync` when available, falling back to `storage.local`. The following keys are written to browser extension storage:
 
 | Key | Type | Description |
 |-----|------|-------------|
 | `mode` | `'day'` \| `'night'` | The currently active color mode. |
 | `savedColors` | JSON string | Array of saved hex color strings, e.g. `'["#ff0000","#00ff00"]'`. |
-| `day` | hex string | The hex color assigned to day mode. |
-| `night` | hex string | The hex color assigned to night mode. |
+
+The per-mode frame colors (`day` and `night`) are read from and written to the browser window's **`localStorage`** via `background_script.ts`, separately from the extension storage keys above.
 
 Without `storage`, your saved colors and mode preference are lost every time the popup closes.
 
