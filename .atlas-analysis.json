@@ -1,0 +1,58 @@
+{
+  "projectType": "frontend",
+  "projectName": "Color Me",
+  "projectDescription": "A browser extension that lets you customize your browser's theme color using an interactive color wheel, with support for day/night modes and saved color palettes.",
+  "theme": "almond",
+  "primaryColor": "#0665fc",
+  "lightColor": "#7cb4fc",
+  "darkColor": "#04a4ec",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": ["introduction", "installation", "quickstart"]
+          },
+          {
+            "group": "Using the Extension",
+            "pages": [
+              "usage/color-wheel",
+              "usage/day-night-mode",
+              "usage/saved-colors"
+            ]
+          },
+          {
+            "group": "Development",
+            "pages": [
+              "development/setup",
+              "development/building",
+              "development/architecture"
+            ]
+          },
+          {
+            "group": "Reference",
+            "pages": ["reference/browser-support", "reference/permissions", "reference/faq"]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Interactive color wheel for real-time browser theme customization",
+    "Day and night mode toggle with persistent storage",
+    "Save and reapply custom color palettes",
+    "Cross-browser support (Firefox, Chrome, Opera, Edge)",
+    "Live reload development workflow with webpack",
+    "Color theory utilities including hex-to-CMYK conversion"
+  ],
+  "publicApiSurface": [
+    "setTheme(theme, value, mode) - Apply a color to the browser theme",
+    "updateColor(theme, value, mode) - Update color for current mode",
+    "changeMode(theme, mode) - Switch between day and night modes",
+    "themes - Day/night theme configuration object",
+    "storage.sync / storage.local - Browser extension storage abstraction",
+    "onRequest(msg, sender) - Content script message listener (CHANGE_COLOR)"
+  ]
+}
